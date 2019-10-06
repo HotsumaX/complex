@@ -1,4 +1,4 @@
-const keys = './keys';
+const keys = require('./keys');
 
 // Express App Setup
 const express = require('express');
@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Postgres server
+// Postgres Client Setup
 const { Pool } = require('pg');
 const pgClient = new Pool({
   user: keys.pgUser,
@@ -24,7 +24,7 @@ pgClient
   .query('CREATE TABLE IF NOT EXISTS values (number INT)')
   .catch(err => console.log(err));
 
-//Redis client setup
+// Redis Client Setup
 const redis = require('redis');
 const redisClient = redis.createClient({
   host: keys.redisHost,
@@ -33,7 +33,7 @@ const redisClient = redis.createClient({
 });
 const redisPublisher = redisClient.duplicate();
 
-//Express route handlers
+// Express route handlers
 
 app.get('/', (req, res) => {
   res.send('Hi');
@@ -55,7 +55,7 @@ app.post('/values', async (req, res) => {
   const index = req.body.index;
 
   if (parseInt(index) > 40) {
-    return res.status(422).send('index too high');
+    return res.status(422).send('Index too high');
   }
 
   redisClient.hset('values', index, 'Nothing yet!');
